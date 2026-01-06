@@ -57,4 +57,3 @@ function removeFromWishlist(productId) {
         body: JSON.stringify({ productId })
     });
 }
-
