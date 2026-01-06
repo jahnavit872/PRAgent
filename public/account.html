@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account - PRAgentS Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🛒 PRAgentS Shop</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html">Products</a>
+                <a href="/cart.html">Cart <span id="cart-count" class="badge">0</span></a>
+                <a href="/orders.html" id="orders-link">Orders</a>
+                <a href="/account.html" id="account-link">Account</a>
+                <a href="/login.html" id="login-link" style="display: none;">Login</a>
+                <a href="#" id="logout-link">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 2rem;">
+        <h2>My Account</h2>
+        
+        <div class="account-container">
+            <!-- Account Info Card -->
+            <div class="account-card">
+                <div class="account-header">
+                    <div class="account-avatar">
+                        <span id="user-initials">JD</span>
+                    </div>
+                    <div class="account-info">
+                        <h3 id="user-name">Loading...</h3>
+                        <p id="user-email">Loading...</p>
+                        <p class="account-joined">Member since <span id="user-joined">2026</span></p>
+                    </div>
+                </div>
+
+                <button class="btn btn-secondary" onclick="toggleEditMode()">Edit Profile</button>
+            </div>
+
+            <!-- Edit Profile Form (Hidden by default) -->
+            <div id="edit-profile-section" class="account-card" style="display: none;">
+                <h3>Edit Profile</h3>
+                <form id="edit-profile-form">
+                    <div class="form-group">
+                        <label for="edit-name">Full Name</label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-email">Email</label>
+                        <input type="email" id="edit-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-password">New Password (leave blank to keep current)</label>
+                        <input type="password" id="edit-password" minlength="6">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" onclick="toggleEditMode()">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Account Statistics -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-info">
+                        <h4 id="total-orders">0</h4>
+                        <p>Total Orders</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-info">
+                        <h4 id="total-spent">$0.00</h4>
+                        <p>Total Spent</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🛒</div>
+                    <div class="stat-info">
+                        <h4 id="cart-items">0</h4>
+                        <p>Items in Cart</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⏳</div>
+                    <div class="stat-info">
+                        <h4 id="pending-orders">0</h4>
+                        <p>Pending Orders</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="account-card">
+                <h3>Recent Orders</h3>
+                <div id="recent-orders-container">
+                    <!-- Recent orders will be loaded here -->
+                </div>
+                <a href="/orders.html" class="btn btn-secondary" style="margin-top: 1rem;">View All Orders</a>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="account-card">
+                <h3>Quick Actions</h3>
+                <div class="quick-actions">
+                    <a href="/products.html" class="action-btn">
+                        <span class="action-icon">🛍️</span>
+                        <span>Continue Shopping</span>
+                    </a>
+                    <a href="/cart.html" class="action-btn">
+                        <span class="action-icon">🛒</span>
+                        <span>View Cart</span>
+                    </a>
+                    <a href="/orders.html" class="action-btn">
+                        <span class="action-icon">📋</span>
+                        <span>Track Orders</span>
+                    </a>
+                    <a href="#" class="action-btn" onclick="handleLogout(event)">
+                        <span class="action-icon">🚪</span>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 PRAgentS Ecommerce. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script src="/js/account.js"></script>
+</body>
+</html>
+
