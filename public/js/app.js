@@ -55,15 +55,18 @@ function updateNavbar() {
     const loginLink = document.getElementById('login-link');
     const logoutLink = document.getElementById('logout-link');
     const ordersLink = document.getElementById('orders-link');
+    const accountLink = document.getElementById('account-link');
 
     if (isLoggedIn()) {
         if (loginLink) loginLink.style.display = 'none';
         if (logoutLink) logoutLink.style.display = 'inline';
         if (ordersLink) ordersLink.style.display = 'inline';
+        if (accountLink) accountLink.style.display = 'inline';
     } else {
         if (loginLink) loginLink.style.display = 'inline';
         if (logoutLink) logoutLink.style.display = 'none';
         if (ordersLink) ordersLink.style.display = 'none';
+        if (accountLink) accountLink.style.display = 'none';
     }
 
     updateCartCount();

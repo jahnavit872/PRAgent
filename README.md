@@ -24,6 +24,12 @@ A full-stack ecommerce application built with Node.js, Express, and vanilla Java
 - Order history tracking
 - Multiple payment methods
 
+👨‍💼 **User Account**
+- Profile management page
+- Account statistics dashboard
+- Recent orders overview
+- Quick action shortcuts
+
 ## Getting Started
 
 ### Prerequisites
@@ -81,6 +87,7 @@ PRAgentS/
 │   ├── cart.html              # Shopping cart
 │   ├── login.html             # Login/Register page
 │   ├── orders.html            # Order history
+│   ├── account.html           # User account page
 │   ├── css/
 │   │   └── style.css          # Application styles
 │   └── js/
@@ -88,7 +95,8 @@ PRAgentS/
 │       ├── products.js        # Products page logic
 │       ├── cart.js            # Cart page logic
 │       ├── auth.js            # Authentication logic
-│       └── orders.js          # Orders page logic
+│       ├── orders.js          # Orders page logic
+│       └── account.js         # Account page logic
 ├── package.json
 ├── .env.example
 ├── .gitignore
