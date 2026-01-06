@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRAgentS Ecommerce - Shop Smart</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🛒 PRAgentS Shop</h1>
+            </div>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/products.html">Products</a>
+                <a href="/cart.html">Cart <span id="cart-count" class="badge">0</span></a>
+                <a href="/orders.html" id="orders-link" style="display: none;">Orders</a>
+                <a href="/login.html" id="login-link">Login</a>
+                <a href="#" id="logout-link" style="display: none;">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h2>Welcome to PRAgentS Shop</h2>
+            <p>Discover amazing products at unbeatable prices</p>
+            <a href="/products.html" class="btn btn-primary">Shop Now</a>
+        </div>
+    </section>
+
+    <section class="featured">
+        <div class="container">
+            <h2>Featured Products</h2>
+            <div id="featured-products" class="product-grid">
+                <!-- Products will be loaded here -->
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 PRAgentS Ecommerce. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="/js/app.js"></script>
+    <script>
+        // Load featured products on homepage
+        async function loadFeaturedProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const container = document.getElementById('featured-products');
+                    const featured = data.products.slice(0, 3);
+                    
+                    container.innerHTML = featured.map(product => `
+                        <div class="product-card">
+                            <img src="${product.image}" alt="${product.name}">
+                            <h3>${product.name}</h3>
+                            <p class="price">$${product.price.toFixed(2)}</p>
+                            <a href="/products.html?id=${product.id}" class="btn btn-secondary">View Details</a>
+                        </div>
+                    `).join('');
+                }
+            } catch (error) {
+                console.error('Error loading featured products:', error);
+            }
+        }
+
+        loadFeaturedProducts();
+    </script>
+</body>
+</html>
+
