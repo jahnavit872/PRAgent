@@ -56,11 +56,24 @@ $('#name').on('focus', function() {
 
 window.onload = function() {
     var savedData = localStorage.getItem('contactForm');
-    if (savedData) {
-        var formData = JSON.parse(savedData);
-        document.getElementById('name').value = formData.name;
-        document.getElementById('email').value = formData.email;
-        document.getElementById('phone').value = formData.phone;
+    if (savedData && savedData !== 'null' && savedData !== 'undefined') {
+        try {
+            var formData = JSON.parse(savedData);
+            if (formData && typeof formData === 'object') {
+                if (formData.name) {
+                    document.getElementById('name').value = formData.name;
+                }
+                if (formData.email) {
+                    document.getElementById('email').value = formData.email;
+                }
+                if (formData.phone) {
+                    document.getElementById('phone').value = formData.phone;
+                }
+            }
+        } catch (error) {
+            console.error('Failed to parse saved form data:', error);
+            localStorage.removeItem('contactForm');
+        }
     }
 };
 
