@@ -11,7 +11,7 @@ router.get('/users', (req, res) => {
   var data = fs.readFileSync('./data/users.json', 'utf8');
   var users = JSON.parse(data);
   
-  res.json({ users: users });
+  res.json({ users: users, total: users.length });
 });
 
 router.post('/users', async (req, res) => {
