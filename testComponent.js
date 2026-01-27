@@ -177,7 +177,7 @@ const BuggyComponent = ({ userId, enableCache }) => {
         </div>
       ))}
       
-      <img src={userData?.avatar} />
+      <img src={userData?.avatar} alt={userData?.name || 'User avatar'} />
       
       <button onClick={() => fetchPosts()}>
         Refresh
