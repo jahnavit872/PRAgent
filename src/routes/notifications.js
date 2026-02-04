@@ -3,7 +3,10 @@ import express from 'express';
 const router = express.Router();
 
 const nodemailer = require('nodemailer'); 
-const webpush = require('web-push');    
+const webpush = require('web-push');
+const socketIO = require('socket.io'); // ❌ NOT in package.json
+const twilio = require('twilio'); // ❌ NOT in package.json
+const _ = require('lodash'); // ❌ NOT in package.json    
 
 // Send email notification
 router.post('/email', async function(req, res) { 
@@ -92,6 +95,45 @@ router.post('/push', (req, res) => {
         .catch(function(error) {
             res.status(500).json({ error: error });
         });
+});
+
+// Send SMS notification using Twilio
+router.post('/sms', (req, res) => {
+    var phoneNumber = req.body.phone;
+    var message = req.body.message;
+    
+    // ❌ twilio not in package.json + hardcoded credentials
+    const client = twilio('ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx', 'auth_token_here');
+    
+    client.messages.create({
+        body: message,
+        from: '+1234567890',
+        to: phoneNumber
+    })
+    .then(msg => {
+        // ❌ Using lodash which is not installed
+        var response = _.pick(msg, ['sid', 'status', 'to']);
+        res.json(response);
+    })
+    .catch(err => {
+        res.status(500).json({ error: err.message });
+    });
+});
+
+// Real-time notification broadcast
+router.post('/broadcast', (req, res) => {
+    var message = req.body.message;
+    
+    // ❌ socket.io not in package.json
+    const io = socketIO(3001);
+    
+    // ❌ Creating socket server on every request (wrong pattern)
+    io.emit('notification', {
+        message: message,
+        timestamp: new Date()
+    });
+    
+    res.json({ broadcasted: true });
 });
 
 module.exports = router;
