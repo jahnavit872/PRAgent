@@ -1,24 +1,15 @@
-# Form Guidelines
-
-This document provides guidelines for building and validating forms in modern web applications.
-
----
-
-## 1. Form Structure
-- Use the `<form>` tag with proper `action` and `method` attributes (`POST` for submissions).
-- Every input field **must have a `name` attribute**.
-- Use `<label>` elements for accessibility.
-- Group related inputs using `<fieldset>` if needed.
-
----
-
-## 2. Input Types
-- Use appropriate input types for better UX and built-in validation:
-  - `text`, `email`, `password`, `number`, `date`, `checkbox`, `radio`, `file`, etc.
-- Use `required`, `minlength`, `maxlength`, and `pattern` attributes for HTML validation.
-
----
-
-## 3. Validation Guidelines
-- **Client-side validation:**  
-  - Use libraries like **React Hook Form** for handling form state and validation.
+⚠️ Code Quality Standards (Should Be Followed)
+File Organization
+Keep files under 300 lines
+One component per file
+Co-locate styles with components
+Naming Conventions
+Components: PascalCase (LoginForm.jsx)
+Functions: camelCase (handleSubmit)
+Constants: UPPER_SNAKE_CASE (API_BASE_URL)
+CSS classes: kebab-case (login-form)
+Accessibility
+All form inputs must have labels
+Use semantic HTML elements
+Provide alt text for images
+Support keyboard navigation
