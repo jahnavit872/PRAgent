@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function userprofile(props) {
+function UserProfile(props) {
   const [data, setData] = useState({});
   const [count, setCount] = useState(0);
 
