@@ -1,42 +1,30 @@
-# React Component Guidelines
+# Coding Guidelines
 
-## Form Validation Requirements
+Use this file at repository root (e.g. copy to `CODING_GUIDELINES.md` or `GUIDELINES.md`) to enable **guidelines-based review**. The PR agent will compare code against these rules.
 
-1. **All forms MUST use React Hook Form** with Zod validation schema
-   - Never use plain state for form handling
-   - Define validation schema before component
-   - Use `zodResolver` for schema integration
+---
 
-2. **Input Validation Rules:**
-   - Email fields: Must validate email format
-   - Password fields: Minimum 8 characters, must include uppercase, lowercase, and number
-   - Username fields: 3-20 characters, alphanumeric only
-   - Phone fields: Must validate phone number format
+## Naming
 
-3. **Error Handling:**
-   - Display validation errors below each input field
-   - Use red text for error messages
-   - Show field-level errors, not generic form errors
+- **Variables and functions:** camelCase (e.g. `getUserData`, `isValidInput`)
+- **Classes:** PascalCase (e.g. `UserService`, `DataProcessor`)
+- **Constants:** UPPER_SNAKE_CASE (e.g. `API_BASE_URL`, `MAX_RETRY`)
 
-4. **Security Requirements:**
-   - Never use `dangerouslySetInnerHTML` with user input
-   - Always sanitize user input before displaying
-   - Use environment variables for API endpoints (never hardcode URLs)
-   - Never log sensitive data (passwords, tokens, emails) to console
+## JavaScript/TypeScript
 
-5. **Accessibility:**
-   - Every input MUST have an associated `<label>` with `htmlFor` attribute
-   - Use semantic HTML elements
-   - Provide `aria-label` for icon-only buttons
+- Use **single quotes** for strings
+- **Semicolons required** at end of statements
+- Maximum line length: **100 characters**
+- No `eval()` or string-based code execution with user input
+- No hardcoded secrets (API keys, tokens, passwords); use environment variables
 
-6. **API Integration:**
-   - Use async/await with try-catch blocks
-   - Show loading states during API calls
-   - Display user-friendly error messages on API failures
-   - Never expose raw error messages to users
+## Security
 
-## Component Structure
+- Never build SQL with string concatenation and user input; use parameterized queries
+- Never pass user input to `eval()`, `Function()`, or similar
+- Do not commit API keys, tokens, or passwords
 
-- Use functional components with hooks
-- Props must have TypeScript interfaces
-- Export components as default at the end of file
+## Imports
+
+- Prefer explicit imports; resolve paths relative to project root
+- Do not import from non-existent modules (will cause build/runtime failure)
