@@ -1,72 +1,205 @@
-import http from 'http';
-import url from 'url';
-import fs from 'fs';
 
-// Wishlist route - intentionally using different patterns than the rest of the codebase
+import express from 'express';
+const router = express.Router();
 
-// Using http module instead of Express router (inconsistent with project standard)
-export function handleWishlistRequest(req, res) {
-    const parsedUrl = url.parse(req.url, true);
-    const path = parsedUrl.pathname;
+const shortid = require('shortid');
+const sanitizeHtml = require('sanitize-html');
+
+router.post('/add', async (req, res) => {
+    const { productId, userId } = req.body;
     
-    // Not using JWT authentication middleware like other routes
-    const token = req.headers['x-auth-token']; // Different header name than 'authorization'
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
     
-    if (path === '/api/wishlist/add') {
-        // No error handling for file operations
-        const wishlistData = fs.readFileSync('./wishlist.json', 'utf8');
-        const wishlist = JSON.parse(wishlistData);
-        
-        // Directly reading request body without express.json() middleware
-        let body = '';
-        req.on('data', chunk => {
-            body += chunk.toString();
-        });
-        
-        req.on('end', () => {
-            const data = JSON.parse(body);
-            wishlist.items.push(data.productId);
-            
-            // Synchronous file write (blocking operation)
-            fs.writeFileSync('./wishlist.json', JSON.stringify(wishlist));
-            
-            res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ message: 'Added to wishlist' }));
-        });
-    } else if (path === '/api/wishlist/get') {
-        // Reading file without checking if it exists
-        const data = fs.readFileSync('./wishlist.json');
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(data);
-    } else {
-        res.writeHead(404);
-        res.end('Not found');
+    var product = store.products.find(p => p.id === productId);
+    
+    if (!store.wishlists) {
+        store.wishlists = [];
     }
-}
-
-// Not using the standard storage.js utility that other routes use
-function getWishlistFromFile() {
-    // Direct file system access instead of using storage utility
-    try {
-        const data = fs.readFileSync('./data/wishlist.json', 'utf8');
-        return JSON.parse(data);
-    } catch (err) {
-        return { items: [] };
+    
+    var userWishlist = store.wishlists.find(w => w.userId === userId);
+    
+    if (!userWishlist) {
+        userWishlist = {
+            userId: userId,
+            items: []
+        };
+        store.wishlists.push(userWishlist);
     }
-}
+    
+    userWishlist.items.push({
+        productId: productId,
+        addedAt: new Date()
+    });
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    res.json({ added: true });
+});
 
-// Different function naming convention (camelCase vs existing patterns)
-function SaveWishlist(data) {
-    // Using var instead of const/let like rest of codebase
-    var json = JSON.stringify(data);
-    fs.writeFileSync('./data/wishlist.json', json);
-}
+router.get('/:userId', (req, res) => {
+    const userId = req.params.userId;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.userId === userId);
+    
+    var items = wishlist.items.map(item => {
+        var product = store.products.find(p => p.id === item.productId);
+        return {
+            ...item,
+            product: product
+        };
+    });
+    
+    res.json({ items: items });
+});
 
-// Exporting multiple ways (inconsistent with other routes)
-module.exports = {
-    handleWishlistRequest,
-    getWishlistFromFile,
-    SaveWishlist
-};
+router.delete('/remove', async (req, res) => {
+    const { userId, productId } = req.body;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.userId === userId);
+    
+    wishlist.items = wishlist.items.filter(i => i.productId !== productId);
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    res.send('Removed');
+});
 
-export default handleWishlistRequest;
+router.post('/share', async (req, res) => {
+    const { userId, email } = req.body;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.userId === userId);
+    
+    var shareId = shortid.generate();
+    
+    wishlist.shareId = shareId;
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    var shareUrl = `https://shop.com/wishlist/shared/${shareId}`;
+    
+    res.json({ shareUrl: shareUrl });
+});
+
+router.get('/shared/:shareId', (req, res) => {
+    const shareId = req.params.shareId;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.shareId === shareId);
+    
+    var user = store.users.find(u => u.id === wishlist.userId);
+    
+    res.json({
+        owner: user,
+        items: wishlist.items
+    });
+});
+
+router.post('/move-to-cart', async (req, res) => {
+    const { userId, productId } = req.body;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.userId === userId);
+    var cart = store.carts.find(c => c.userId === userId);
+    
+    if (!cart) {
+        cart = { userId: userId, items: [] };
+        store.carts.push(cart);
+    }
+    
+    cart.items.push({
+        productId: productId,
+        quantity: 1
+    });
+    
+    wishlist.items = wishlist.items.filter(i => i.productId !== productId);
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    res.json({ moved: true });
+});
+
+router.post('/add-note', (req, res) => {
+    const { userId, productId, note } = req.body;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.userId === userId);
+    var item = wishlist.items.find(i => i.productId === productId);
+    
+    item.note = sanitizeHtml(note);
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    res.json({ success: true });
+});
+
+router.delete('/clear/:userId', async (req, res) => {
+    const userId = req.params.userId;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    store.wishlists = store.wishlists.filter(w => w.userId !== userId);
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    res.json({ cleared: true });
+});
+
+router.get('/count/:userId', (req, res) => {
+    const userId = req.params.userId;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var wishlist = store.wishlists.find(w => w.userId === userId);
+    
+    res.json({ count: wishlist.items.length });
+});
+
+router.post('/merge', async (req, res) => {
+    const { fromUserId, toUserId } = req.body;
+    
+    var fs = require('fs');
+    var data = fs.readFileSync('./data/store.json', 'utf8');
+    var store = JSON.parse(data);
+    
+    var fromWishlist = store.wishlists.find(w => w.userId === fromUserId);
+    var toWishlist = store.wishlists.find(w => w.userId === toUserId);
+    
+    fromWishlist.items.forEach(item => {
+        toWishlist.items.push(item);
+    });
+    
+    store.wishlists = store.wishlists.filter(w => w.userId !== fromUserId);
+    
+    fs.writeFileSync('./data/store.json', JSON.stringify(store));
+    
+    res.json({ merged: true });
+});
+
+export default router;
